@@ -338,7 +338,7 @@ li {
     border-right: 0;
     border-bottom: 1px solid #d9e2ef;
     padding: 0.85rem 0;
-    background: rgba(255, 255, 255, 0.94);
+    background: linear-gradient(180deg, #f9fbff 0%, #f1f6fd 100%);
   }
 
   .site-header .container {
@@ -349,7 +349,9 @@ li {
   .top-nav {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     gap: 0.55rem 0.95rem;
   }
 
@@ -359,10 +361,11 @@ li {
     font-size: 0.86rem;
     font-weight: 500;
     padding: 0;
+    text-align: center;
   }
 
   .nav-group {
-    align-items: flex-start;
+    align-items: center;
   }
 
   .nav-submenu {
@@ -371,7 +374,7 @@ li {
   }
 
   .nav-submenu a {
-    text-align: left;
+    text-align: center;
   }
 
   .footer-note {
