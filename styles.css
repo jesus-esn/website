@@ -377,6 +377,11 @@ li {
     text-align: center;
   }
 
+  .hero-photo {
+    justify-self: center;
+    align-self: center;
+  }
+
   .footer-note {
     position: static;
     margin-top: 0.5rem;
