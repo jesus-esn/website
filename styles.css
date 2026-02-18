@@ -330,6 +330,16 @@ li {
     padding-left: 0;
   }
 
+  .hero {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 1.2rem;
+  }
+
+  .hero-copy {
+    width: 100%;
+  }
+
   .site-header {
     position: sticky;
     top: 0;
