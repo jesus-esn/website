@@ -235,12 +235,32 @@ a {
 
 .pub-item {
   padding: 1.8rem 0;
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
   border-bottom: 1px solid var(--rule);
 }
 
 .pub-item:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+.pub-figure {
+  margin: 0;
+}
+
+.pub-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+
+.pub-content h3 {
+  margin: 0;
 }
 
 .pub-meta {
@@ -432,6 +452,11 @@ li {
   .story-block {
     padding: 1.3rem;
     margin-top: 1.8rem;
+  }
+
+  .pub-item {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
   }
 
 }
