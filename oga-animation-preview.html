@@ -220,7 +220,7 @@
         drawPhraseWithO("", suffix, cell.x + 188, 524, FONT_SIZE);
       }
 
-      function drawZoomPanel(removed, pacPos, mouth) {
+      function drawZoomPanel(removed, pacPos, mouth, allowExit = false) {
         ctx.fillStyle = "#ffffff";
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1.8;
@@ -241,7 +241,9 @@
         }
 
         // OGA as Pac-Man
-        const px = Math.min(zoom.x + zoom.w - OGA_R - 8, Math.max(zoom.x + OGA_R + 8, pacPos.x));
+        const px = allowExit
+          ? pacPos.x
+          : Math.min(zoom.x + zoom.w - OGA_R - 8, Math.max(zoom.x + OGA_R + 8, pacPos.x));
         const py = Math.min(zoom.y + zoom.h - OGA_R - 8, Math.max(zoom.y + OGA_R + 8, pacPos.y));
         ctx.fillStyle = "#facc15";
         ctx.beginPath();
@@ -345,8 +347,8 @@
         if (phase >= 0.15 && phase < 0.94 && lastRemoved < sugarsInZoom.length) {
           const [sx, sy] = sugarsInZoom[lastRemoved];
           pacTarget = { x: sx - OGA_R * 0.62, y: sy };
-        } else if (phase >= 0.94) {
-          pacTarget = { x: zoom.x + zoom.w - OGA_R - 14, y: zoom.y + zoom.h * 0.5 };
+        } else if (lastRemoved >= sugarsInZoom.length || phase >= 0.94) {
+          pacTarget = { x: zoom.x + zoom.w + OGA_R + 48, y: zoom.y + zoom.h * 0.5 };
           glow = 0.9 + 0.08 * Math.sin(now * 0.004);
         }
 
@@ -368,7 +370,7 @@
 
         drawMainCell(Math.max(0, Math.min(1, glow)));
         drawConnector();
-        drawZoomPanel(removed, pacCurrent, mouth);
+        drawZoomPanel(removed, pacCurrent, mouth, lastRemoved >= sugarsInZoom.length || phase >= 0.94);
 
         stepParticles();
         drawParticles();
