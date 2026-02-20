@@ -141,7 +141,7 @@ a:visited {
 }
 
 .name-subtitle:last-of-type {
-  margin-bottom: 1.35rem;
+  margin-bottom: 2rem;
 }
 
 .dek {
@@ -159,7 +159,7 @@ a:visited {
 }
 
 .open-work-links {
-  margin-top: 1.35rem;
+  margin-top: 2rem;
   font-size: 0.94rem;
   display: flex;
   align-items: center;
@@ -179,7 +179,7 @@ a:visited {
   background: transparent;
   color: #0000ee;
   text-decoration: underline;
-  font-size: 0.84rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.2;
 }
