@@ -375,6 +375,11 @@ a:visited {
   padding-bottom: 0;
 }
 
+.role.is-last-visible {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
 .role-meta {
   margin-top: 0.2rem;
   color: var(--muted);
