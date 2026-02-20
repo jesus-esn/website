@@ -82,9 +82,9 @@
       const labelSize = 32;
 
       const squiggles = [
-        { x0: 40, len: 430, y0: 155, phase: 0.1 },
-        { x0: 50, len: 420, y0: 305, phase: 0.85 },
-        { x0: 35, len: 440, y0: 455, phase: 1.45 }
+        { x0: 90, len: 330, y0: 165, phase: 0.1 },
+        { x0: 95, len: 325, y0: 305, phase: 0.85 },
+        { x0: 85, len: 335, y0: 445, phase: 1.45 }
       ];
       const lysineTs = [0.44, 0.56, 0.50];
 
@@ -148,30 +148,23 @@
         const anchors = [];
         for (let i = 0; i < lysineTs.length; i += 1) {
           const base = squigglePoint(i, lysineTs[i]);
-          const l = { x: base.x, y: base.y - 2 };
+          const l = { x: base.x, y: base.y - 30 };
           anchors.push(l);
 
-          ctx.strokeStyle = "#111827";
-          ctx.lineWidth = 2.8;
-          ctx.beginPath();
-          ctx.moveTo(base.x, base.y);
-          ctx.lineTo(base.x, base.y - 6);
-          ctx.stroke();
-
-          ctx.strokeStyle = "#111827";
-          ctx.lineWidth = 4.5;
-          ctx.beginPath();
-          ctx.moveTo(l.x, l.y + 10);
-          ctx.lineTo(l.x, l.y - 8);
-          ctx.moveTo(l.x, l.y - 8);
-          ctx.lineTo(l.x - 12, l.y - 22);
-          ctx.moveTo(l.x, l.y - 8);
-          ctx.lineTo(l.x + 12, l.y - 22);
-          ctx.stroke();
+          ctx.font = `400 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
+          const wL = ctx.measureText("L").width;
+          const wY = ctx.measureText("y").width;
+          const wS = ctx.measureText("s").width;
+          const wordW = wL + wY + wS;
+          const tx = l.x - wordW / 2;
+          const ty = l.y - 2;
 
           ctx.fillStyle = "#111827";
-          ctx.font = `400 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
-          ctx.fillText("Lys", l.x - 24, l.y + 52);
+          ctx.fillText("L", tx, ty);
+          ctx.fillStyle = proteinColor;
+          ctx.fillText("y", tx + wL, ty);
+          ctx.fillStyle = "#111827";
+          ctx.fillText("s", tx + wL + wY, ty);
         }
         return anchors;
       }
@@ -211,12 +204,9 @@
         ctx.arc(x, y, centerR, 0, Math.PI * 2);
         ctx.fillStyle = attached ? "#ef4444" : "#fda4af";
         ctx.fill();
-        ctx.strokeStyle = attached ? "#991b1b" : "#be123c";
-        ctx.lineWidth = 1.8;
-        ctx.stroke();
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = `700 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
+        ctx.font = `400 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
         const label = "CO₂";
         const tw = ctx.measureText(label).width;
         ctx.fillText(label, x - tw / 2, y + 10);
@@ -227,10 +217,6 @@
         const y0 = 70;
         const w = 360;
         const h = 470;
-
-        ctx.strokeStyle = "#cbd5e1";
-        ctx.lineWidth = 1.8;
-        ctx.strokeRect(x0, y0, w, h);
 
         const axisX = x0 + 45;
         const axisY = y0 + h - 45;
@@ -276,13 +262,15 @@
           const x = sx + (tx - sx) * prog;
           const y = sy + (ty - sy) * prog;
 
-          drawCO2At(x, y, prog >= 1);
+          if (p >= stepStart[i]) {
+            drawCO2At(x, y, prog >= 1);
+          }
 
           if (prog >= 1) {
             ctx.strokeStyle = "#7f1d1d";
             ctx.lineWidth = 2.2;
             ctx.beginPath();
-            ctx.moveTo(lysines[i].x, lysines[i].y - 18);
+            ctx.moveTo(lysines[i].x, lysines[i].y + 6);
             ctx.lineTo(x, y + 34);
             ctx.stroke();
           }
