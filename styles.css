@@ -471,6 +471,10 @@ body.pdf-open .pdf-sidepanel {
 }
 
 @media (min-width: 901px) {
+  body.pdf-open .site-header {
+    left: 0.8rem;
+  }
+
   body.pdf-open main.container,
   body.pdf-open footer.container {
     width: min(var(--content-max), calc(100% - var(--pdf-pane-w) - 5rem));
