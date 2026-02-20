@@ -109,6 +109,15 @@
         ctx.fillText(text, x, y);
       }
 
+      function drawOGlcNAcText(x, y, size = LABEL_SIZE, color = "#000000") {
+        ctx.fillStyle = color;
+        ctx.font = `italic 400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
+        ctx.fillText("O", x, y);
+        const wO = ctx.measureText("O").width;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
+        ctx.fillText("-GlcNAc", x + wO, y);
+      }
+
       function drawFlame(cx, cy, intensity) {
         const h = 92 + intensity * 14;
         const w = 66 + intensity * 8;
@@ -224,7 +233,7 @@
         ctx.strokeRect(tagX, tagY, sq, sq);
       }
 
-      function drawChargeLabel(symbol, text, x, y, symbolColor) {
+      function drawChargeLabel(symbol, x, y, symbolColor) {
         ctx.fillStyle = symbolColor;
         ctx.beginPath();
         ctx.arc(x, y - 16, 26, 0, Math.PI * 2);
@@ -243,7 +252,7 @@
           ctx.lineTo(cx, cy + s);
         }
         ctx.stroke();
-        drawText(text, x + 38, y, 56, "#000000");
+        drawOGlcNAcText(x + 38, y, 56, "#000000");
       }
 
       function frame(now) {
@@ -265,8 +274,8 @@
         const attachPoint = ropeTopCenter(rightProtein.x, rightProtein.y, rightUnfold, 1, vibR);
         drawOGlcNAcTagAttached(attachPoint.x, attachPoint.y);
 
-        drawChargeLabel("−", "O-GlcNAc", leftProtein.x - 142, 560, "#dc2626");
-        drawChargeLabel("+", "O-GlcNAc", rightProtein.x - 142, 560, "#16a34a");
+        drawChargeLabel("−", leftProtein.x - 142, 560, "#dc2626");
+        drawChargeLabel("+", rightProtein.x - 142, 560, "#16a34a");
 
         requestAnimationFrame(frame);
       }
