@@ -105,7 +105,7 @@
       const zoom = { x: 470, y: 34, w: 400, h: 390 };
       const FONT_SIZE = 56;
       const OGA_R = 78;
-      const loopMs = 12000;
+      const loopMs = 18000;
       const loci = [
         [144, 398], [236, 328], [328, 404], [214, 500]
       ];
@@ -350,8 +350,8 @@
           glow = 0.9 + 0.08 * Math.sin(now * 0.004);
         }
 
-        pacCurrent.x += (pacTarget.x - pacCurrent.x) * 0.09;
-        pacCurrent.y += (pacTarget.y - pacCurrent.y) * 0.09;
+        pacCurrent.x += (pacTarget.x - pacCurrent.x) * 0.06;
+        pacCurrent.y += (pacTarget.y - pacCurrent.y) * 0.06;
         const mouth = 0.23 + Math.abs(Math.sin(now * 0.014)) * 0.34;
 
         // Remove only when the next sugar reaches the Pac-Man mouth area.
