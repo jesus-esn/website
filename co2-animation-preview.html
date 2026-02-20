@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CO² Carboxylation Animation Preview</title>
+    <title>CO₂ Carboxylation Animation Preview</title>
     <style>
       :root {
         --line: #d9e2ec;
@@ -70,9 +70,9 @@
   </head>
   <body>
     <main class="wrap">
-      <h1>CO²-dependent lysine carboxylation preview</h1>
-      <p>Three CO² molecules attach to three lysines, and the detected peak intensity increases from 1 to 3.</p>
-      <canvas id="scene" width="900" height="600" aria-label="CO² carboxylation animation"></canvas>
+      <h1>CO₂-dependent lysine carboxylation preview</h1>
+      <p>Three CO₂ molecules attach to three lysines, and the detected peak intensity increases from 1 to 3.</p>
+      <canvas id="scene" width="900" height="600" aria-label="CO₂ carboxylation animation"></canvas>
     </main>
 
     <script>
@@ -174,17 +174,42 @@
       }
 
       function drawCO2At(x, y, attached) {
+        const sideOffset = 17;
+        const sideR = 9;
+        const centerR = 12;
+
+        ctx.strokeStyle = attached ? "#7f1d1d" : "#be123c";
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.arc(x, y, 17, 0, Math.PI * 2);
+        ctx.moveTo(x - sideOffset + sideR, y);
+        ctx.lineTo(x - centerR, y);
+        ctx.moveTo(x + centerR, y);
+        ctx.lineTo(x + sideOffset - sideR, y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y, centerR, 0, Math.PI * 2);
         ctx.fillStyle = attached ? "#ef4444" : "#fda4af";
         ctx.fill();
         ctx.strokeStyle = attached ? "#991b1b" : "#be123c";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.8;
         ctx.stroke();
 
+        ctx.beginPath();
+        ctx.arc(x - sideOffset, y, sideR, 0, Math.PI * 2);
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 14px Aptos, "Libre Franklin", Arial, sans-serif';
-        ctx.fillText("CO²", x - 12, y + 5);
+        ctx.fill();
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x + sideOffset, y, sideR, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
       }
 
       function drawPeakPanel(count) {
@@ -197,20 +222,18 @@
         ctx.lineWidth = 1.8;
         ctx.strokeRect(x0, y0, w, h);
 
+        const axisX = x0 + 45;
+        const axisY = y0 + h - 45;
         ctx.strokeStyle = "#111827";
         ctx.lineWidth = 2.2;
         ctx.beginPath();
-        ctx.moveTo(x0 + 45, y0 + h - 45);
-        ctx.lineTo(x0 + 45, y0 + 40);
-        ctx.lineTo(x0 + w - 26, y0 + h - 45);
+        ctx.moveTo(axisX, axisY);
+        ctx.lineTo(axisX, y0 + 40);
+        ctx.moveTo(axisX, axisY);
+        ctx.lineTo(x0 + w - 26, axisY);
         ctx.stroke();
 
-        ctx.fillStyle = "#111827";
-        ctx.font = '400 20px Aptos, "Libre Franklin", Arial, sans-serif';
-        ctx.fillText("Signal", x0 + 14, y0 + 34);
-        ctx.fillText("m/z", x0 + w - 58, y0 + h - 12);
-
-        const baseY = y0 + h - 45;
+        const baseY = axisY;
         const peakX = x0 + 190;
         const maxH = 220;
         const target = count / 3;
@@ -228,7 +251,7 @@
 
         ctx.fillStyle = "#0f172a";
         ctx.font = '600 24px Aptos, "Libre Franklin", Arial, sans-serif';
-        ctx.fillText(count + " CO² attached", x0 + 108, y0 + 74);
+        ctx.fillText(count + " CO₂ attached", x0 + 108, y0 + 74);
       }
 
       function frame(now) {
