@@ -82,6 +82,30 @@
         </figure>
       </section>
 
+      <section class="story-block" id="experience">
+        <h2>Experience</h2>
+        <article class="role">
+          <h3>Scientist &amp; R&amp;D Project Manager</h3>
+          <p class="role-meta"><a href="https://www.lite-1.bio/" target="_blank" rel="noreferrer">Lite-1</a>, Vancouver BC · Jun 2025 - Jan 2026</p>
+          <p>Led microbial pigment R&amp;D workflows from design through assay development, optimization, QC, and scale-up handoff planning.</p>
+        </article>
+        <article class="role">
+          <h3>Research Assistant</h3>
+          <p class="role-meta"><a href="https://www.sfu.ca/" target="_blank" rel="noreferrer">Simon Fraser University</a>, Burnaby BC · Jan 2018 - Jan 2025</p>
+          <p>Drove glycosylation-focused biochemistry and biophysics workflows, including validation pipelines and analytical strategy development.</p>
+        </article>
+        <article class="role">
+          <h3>Research Assistant</h3>
+          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2013 - Nov 2017</p>
+          <p>Built cell-based assay systems, microscopy and flow workflows, and biochemical validation procedures for reproducible readouts.</p>
+        </article>
+        <article class="role">
+          <h3>Research Ethics Board (REB) Officer</h3>
+          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2016 - May 2019</p>
+          <p>Supported protocol and informed-consent compliance processes for human-subject research oversight.</p>
+        </article>
+      </section>
+
       <section class="story-block" id="publications">
         <h2>Recent Publications</h2>
         <p class="section-intro">
@@ -136,30 +160,6 @@
           <span class="pub-counter" id="pub-counter" aria-live="polite"></span>
           <button type="button" class="pub-nav-button" id="pub-next" aria-label="Next publication">Next</button>
         </div>
-      </section>
-
-      <section class="story-block" id="experience">
-        <h2>Experience</h2>
-        <article class="role">
-          <h3>Scientist &amp; R&amp;D Project Manager</h3>
-          <p class="role-meta"><a href="https://www.lite-1.bio/" target="_blank" rel="noreferrer">Lite-1</a>, Vancouver BC · Jun 2025 - Jan 2026</p>
-          <p>Led microbial pigment R&amp;D workflows from design through assay development, optimization, QC, and scale-up handoff planning.</p>
-        </article>
-        <article class="role">
-          <h3>Research Assistant</h3>
-          <p class="role-meta"><a href="https://www.sfu.ca/" target="_blank" rel="noreferrer">Simon Fraser University</a>, Burnaby BC · Jan 2018 - Jan 2025</p>
-          <p>Drove glycosylation-focused biochemistry and biophysics workflows, including validation pipelines and analytical strategy development.</p>
-        </article>
-        <article class="role">
-          <h3>Research Assistant</h3>
-          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2013 - Nov 2017</p>
-          <p>Built cell-based assay systems, microscopy and flow workflows, and biochemical validation procedures for reproducible readouts.</p>
-        </article>
-        <article class="role">
-          <h3>Research Ethics Board (REB) Officer</h3>
-          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2016 - May 2019</p>
-          <p>Supported protocol and informed-consent compliance processes for human-subject research oversight.</p>
-        </article>
       </section>
 
       <section class="story-block" id="education">
@@ -253,7 +253,6 @@
         const prevButton = publicationsSection.querySelector("#pub-prev");
         const nextButton = publicationsSection.querySelector("#pub-next");
         const counter = publicationsSection.querySelector("#pub-counter");
-
         if (!pubList || items.length === 0 || !prevButton || !nextButton || !counter) return;
 
         let activeIndex = 0;
