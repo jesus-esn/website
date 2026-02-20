@@ -346,11 +346,10 @@ a:visited {
 
 .role {
   padding: 1.6rem 0;
-  border-bottom: 1px solid #e5ebf3;
+  border-bottom: 0;
 }
 
 .role:last-child {
-  border-bottom: 0;
   padding-bottom: 0;
 }
 
