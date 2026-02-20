@@ -79,11 +79,12 @@
       const H = viewH;
       const loopMs = 9000;
       const proteinColor = "#7aa8d8";
+      const labelSize = 32;
 
       const squiggles = [
-        { x0: 110, len: 290, y0: 238, phase: 0.1 },
-        { x0: 120, len: 280, y0: 306, phase: 0.85 },
-        { x0: 105, len: 300, y0: 374, phase: 1.45 }
+        { x0: 40, len: 430, y0: 155, phase: 0.1 },
+        { x0: 50, len: 420, y0: 305, phase: 0.85 },
+        { x0: 35, len: 440, y0: 455, phase: 1.45 }
       ];
       const lysineTs = [0.44, 0.56, 0.50];
 
@@ -130,7 +131,7 @@
       function drawProtein() {
         const points = 260;
         ctx.strokeStyle = proteinColor;
-        ctx.lineWidth = 12;
+        ctx.lineWidth = 16;
         for (let strand = 0; strand < squiggles.length; strand += 1) {
           ctx.beginPath();
           for (let i = 0; i <= points; i += 1) {
@@ -150,15 +151,15 @@
           const l = { x: base.x, y: base.y - 2 };
           anchors.push(l);
 
-          ctx.strokeStyle = proteinColor;
-          ctx.lineWidth = 2.2;
+          ctx.strokeStyle = "#111827";
+          ctx.lineWidth = 2.8;
           ctx.beginPath();
           ctx.moveTo(base.x, base.y);
           ctx.lineTo(base.x, base.y - 6);
           ctx.stroke();
 
-          ctx.strokeStyle = proteinColor;
-          ctx.lineWidth = 3.6;
+          ctx.strokeStyle = "#111827";
+          ctx.lineWidth = 4.5;
           ctx.beginPath();
           ctx.moveTo(l.x, l.y + 10);
           ctx.lineTo(l.x, l.y - 8);
@@ -168,18 +169,18 @@
           ctx.lineTo(l.x + 12, l.y - 22);
           ctx.stroke();
 
-          ctx.fillStyle = proteinColor;
-          ctx.font = '400 18px Aptos, "Libre Franklin", Arial, sans-serif';
-          ctx.fillText("Lys", l.x - 16, l.y + 34);
+          ctx.fillStyle = "#111827";
+          ctx.font = `400 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
+          ctx.fillText("Lys", l.x - 24, l.y + 52);
         }
         return anchors;
       }
 
       function drawCO2At(x, y, attached) {
-        const sideOffset = 24;
-        const sideR = 12.5;
-        const centerR = 21;
-        const sideDrop = 12;
+        const sideOffset = 36;
+        const sideR = 20;
+        const centerR = 34;
+        const sideDrop = 18;
 
         ctx.strokeStyle = attached ? "#7f1d1d" : "#be123c";
         ctx.lineWidth = 1.8;
@@ -215,17 +216,17 @@
         ctx.stroke();
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = '700 13px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.font = `700 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
         const label = "CO₂";
         const tw = ctx.measureText(label).width;
-        ctx.fillText(label, x - tw / 2, y + 4);
+        ctx.fillText(label, x - tw / 2, y + 10);
       }
 
       function drawPeakPanel(count) {
-        const x0 = 520;
-        const y0 = 110;
-        const w = 320;
-        const h = 330;
+        const x0 = 500;
+        const y0 = 70;
+        const w = 360;
+        const h = 470;
 
         ctx.strokeStyle = "#cbd5e1";
         ctx.lineWidth = 1.8;
@@ -244,7 +245,7 @@
 
         const baseY = axisY;
         const peakX = x0 + 190;
-        const maxH = 220;
+        const maxH = 340;
         const target = count / 3;
         const peakH = maxH * (0.12 + 0.88 * target);
 
@@ -281,17 +282,8 @@
             ctx.strokeStyle = "#7f1d1d";
             ctx.lineWidth = 2.2;
             ctx.beginPath();
-            ctx.moveTo(lysines[i].x, lysines[i].y - 20);
-            ctx.lineTo(x, y + 22);
-            ctx.stroke();
-          }
-
-          if (prog > 0 && prog < 1) {
-            ctx.strokeStyle = "rgba(127, 29, 29, 0.35)";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.lineTo(x, y);
+            ctx.moveTo(lysines[i].x, lysines[i].y - 18);
+            ctx.lineTo(x, y + 34);
             ctx.stroke();
           }
         }
