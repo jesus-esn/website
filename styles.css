@@ -19,7 +19,7 @@
 body {
   margin: 0;
   padding-left: 0;
-  font-family: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  font-family: "Merriweather", Georgia, serif;
   color: var(--ink);
   background:
     linear-gradient(180deg, #f9fbff 0%, #f1f6fd 100%);
@@ -82,7 +82,7 @@ main {
 h1,
 h2,
 h3 {
-  font-family: "Merriweather", Georgia, serif;
+  font-family: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
   line-height: 1.25;
   margin: 0;
   color: #4b5563;
