@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CO2 Carboxylation Animation Preview</title>
+    <title>CO² Carboxylation Animation Preview</title>
     <style>
       :root {
         --line: #d9e2ec;
@@ -70,9 +70,9 @@
   </head>
   <body>
     <main class="wrap">
-      <h1>CO2-dependent lysine carboxylation preview</h1>
-      <p>Three CO2 molecules attach to three lysines, and the detected peak intensity increases from 1 to 3.</p>
-      <canvas id="scene" width="900" height="600" aria-label="CO2 carboxylation animation"></canvas>
+      <h1>CO²-dependent lysine carboxylation preview</h1>
+      <p>Three CO² molecules attach to three lysines, and the detected peak intensity increases from 1 to 3.</p>
+      <canvas id="scene" width="900" height="600" aria-label="CO² carboxylation animation"></canvas>
     </main>
 
     <script>
@@ -97,16 +97,6 @@
       const W = viewW;
       const H = viewH;
       const loopMs = 9000;
-
-      const protein = {
-        cx: 260,
-        cy: 300,
-        points: [
-          [140, 300], [175, 250], [225, 240], [260, 200], [310, 210],
-          [350, 250], [395, 265], [410, 310], [382, 360], [330, 390],
-          [275, 405], [210, 388], [165, 350]
-        ]
-      };
 
       const lysines = [
         { x: 206, y: 258, label: "Lys" },
@@ -146,11 +136,11 @@
 
       function drawProtein() {
         ctx.beginPath();
-        ctx.moveTo(protein.points[0][0], protein.points[0][1]);
-        for (let i = 1; i < protein.points.length; i += 1) {
-          const [x, y] = protein.points[i];
-          ctx.lineTo(x, y);
-        }
+        ctx.moveTo(140, 302);
+        ctx.bezierCurveTo(130, 238, 210, 194, 278, 198);
+        ctx.bezierCurveTo(346, 202, 414, 252, 406, 320);
+        ctx.bezierCurveTo(398, 384, 332, 420, 262, 414);
+        ctx.bezierCurveTo(194, 408, 152, 368, 140, 302);
         ctx.closePath();
         ctx.fillStyle = "#dbe7f4";
         ctx.strokeStyle = "#8fa4bd";
@@ -166,12 +156,15 @@
       function drawLysines() {
         for (let i = 0; i < lysines.length; i += 1) {
           const l = lysines[i];
-          ctx.beginPath();
-          ctx.arc(l.x, l.y, 13, 0, Math.PI * 2);
-          ctx.fillStyle = "#f59e0b";
-          ctx.fill();
           ctx.strokeStyle = "#92400e";
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(l.x, l.y + 14);
+          ctx.lineTo(l.x, l.y - 8);
+          ctx.moveTo(l.x, l.y - 8);
+          ctx.lineTo(l.x - 12, l.y - 22);
+          ctx.moveTo(l.x, l.y - 8);
+          ctx.lineTo(l.x + 12, l.y - 22);
           ctx.stroke();
 
           ctx.fillStyle = "#111827";
@@ -191,10 +184,10 @@
 
         ctx.fillStyle = "#ffffff";
         ctx.font = '700 14px Aptos, "Libre Franklin", Arial, sans-serif';
-        ctx.fillText("CO2", x - 12, y + 5);
+        ctx.fillText("CO²", x - 12, y + 5);
       }
 
-      function drawPeakPanel(count, pulse) {
+      function drawPeakPanel(count) {
         const x0 = 520;
         const y0 = 110;
         const w = 320;
@@ -221,9 +214,9 @@
         const peakX = x0 + 190;
         const maxH = 220;
         const target = count / 3;
-        const peakH = maxH * (0.12 + 0.88 * target) * (1 + pulse * 0.06);
+        const peakH = maxH * (0.12 + 0.88 * target);
 
-        ctx.strokeStyle = "#2563eb";
+        ctx.strokeStyle = "#16a34a";
         ctx.lineWidth = 4;
         ctx.beginPath();
         ctx.moveTo(x0 + 45, baseY);
@@ -235,7 +228,7 @@
 
         ctx.fillStyle = "#0f172a";
         ctx.font = '600 24px Aptos, "Libre Franklin", Arial, sans-serif';
-        ctx.fillText(count + " CO2 attached", x0 + 108, y0 + 74);
+        ctx.fillText(count + " CO² attached", x0 + 108, y0 + 74);
       }
 
       function frame(now) {
@@ -260,7 +253,7 @@
             ctx.strokeStyle = "#7f1d1d";
             ctx.lineWidth = 2.2;
             ctx.beginPath();
-            ctx.moveTo(lysines[i].x, lysines[i].y - 13);
+            ctx.moveTo(lysines[i].x, lysines[i].y - 22);
             ctx.lineTo(x, y + 17);
             ctx.stroke();
           }
@@ -276,8 +269,7 @@
         }
 
         const count = attachedCount(p);
-        const pulse = Math.sin(now * 0.01);
-        drawPeakPanel(count, pulse);
+        drawPeakPanel(count);
 
         ctx.fillStyle = "#111827";
         ctx.font = '400 21px Aptos, "Libre Franklin", Arial, sans-serif';
