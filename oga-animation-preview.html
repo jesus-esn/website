@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OGA Animation Preview</title>
+    <style>
+      :root {
+        --bg: #eef3f7;
+        --ink: #1f2937;
+        --muted: #5b6675;
+        --panel: #ffffff;
+        --line: #d9e2ec;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Libre Franklin", Arial, sans-serif;
+        color: var(--ink);
+        background: linear-gradient(180deg, #f7fafc 0%, var(--bg) 100%);
+      }
+
+      .wrap {
+        width: min(1060px, calc(100% - 2rem));
+        margin: 1.4rem auto 2rem;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 1rem 1rem 1.2rem;
+      }
+
+      h1 {
+        margin: 0 0 0.2rem;
+        font-size: 1.1rem;
+      }
+
+      p {
+        margin: 0 0 0.85rem;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Preview: OGA removing O-GlcNAc from tissue</h1>
+      <p>Loop: OGA (Pac-Man) removes O-GlcNAc in a zoomed view while blue foci light up in the cell.</p>
+      <canvas id="scene" width="760" height="760" aria-label="Animation preview"></canvas>
+    </main>
+
+    <script>
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d");
+      const viewW = 760;
+      const viewH = 760;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewW * dpr);
+      canvas.height = Math.floor(viewH * dpr);
+      canvas.style.width = `${viewW}px`;
+      canvas.style.height = `${viewH}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      const W = viewW;
+      const H = viewH;
+
+      const cell = { x: 240, y: 530, rx: 152, ry: 126 };
+      const zoom = { x: 300, y: 40, w: 430, h: 430 };
+      const FONT_SIZE = 24;
+      const OGA_R = 70;
+      const loopMs = 12000;
+      const loci = [
+        [146, 500], [246, 456], [324, 536], [204, 604]
+      ];
+      const sourceBox = { x: loci[0][0] - 16, y: loci[0][1] - 16, s: 32 };
+      const sugarsInZoom = [
+        [348, 150], [410, 304], [522, 170], [616, 334], [694, 206]
+      ];
+      let particles = [];
+      let lastRemoved = 0;
+      let lastPhase = 0;
+      let pacCurrent = { x: zoom.x + OGA_R + 16, y: zoom.y + zoom.h * 0.5 };
+
+      function easeOut(t) {
+        const k = Math.max(0, Math.min(1, t));
+        return 1 - Math.pow(1 - k, 3);
+      }
+
+      function drawLabel(text, x, y, size = FONT_SIZE, color = "#000000") {
+        ctx.fillStyle = color;
+        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.fillText(text, x, y);
+      }
+
+      function drawOGlcNAcText(x, y, size = FONT_SIZE, color = "#000000") {
+        ctx.fillStyle = color;
+        ctx.font = `italic 400 ${size}px Libre Franklin, Arial`;
+        ctx.fillText("O", x, y);
+        const wO = ctx.measureText("O").width;
+        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.fillText("-GlcNAc", x + wO, y);
+        return wO + ctx.measureText("-GlcNAc").width;
+      }
+
+      function drawPhraseWithO(prefix, suffix, x, y, size = FONT_SIZE, color = "#000000") {
+        ctx.fillStyle = color;
+        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.fillText(prefix, x, y);
+        const wp = ctx.measureText(prefix).width;
+        const wo = drawOGlcNAcText(x + wp, y, size, color);
+        ctx.fillStyle = color;
+        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.fillText(suffix, x + wp + wo, y);
+      }
+
+      function drawMainCell(glowStrength) {
+        // Amorphous contour with four leg-like protrusions.
+        ctx.beginPath();
+        ctx.moveTo(cell.x - 198, cell.y + 6);
+        ctx.bezierCurveTo(cell.x - 168, cell.y - 62, cell.x - 98, cell.y - 132, cell.x - 22, cell.y - 140);
+        // top-right leg
+        ctx.bezierCurveTo(cell.x + 46, cell.y - 148, cell.x + 86, cell.y - 182, cell.x + 108, cell.y - 138);
+        ctx.bezierCurveTo(cell.x + 126, cell.y - 104, cell.x + 160, cell.y - 96, cell.x + 198, cell.y - 56);
+        // right-side body
+        ctx.bezierCurveTo(cell.x + 232, cell.y - 8, cell.x + 228, cell.y + 50, cell.x + 176, cell.y + 88);
+        // bottom-right leg
+        ctx.bezierCurveTo(cell.x + 146, cell.y + 106, cell.x + 140, cell.y + 150, cell.x + 96, cell.y + 160);
+        ctx.bezierCurveTo(cell.x + 64, cell.y + 166, cell.x + 48, cell.y + 142, cell.x + 20, cell.y + 148);
+        // bottom-left leg
+        ctx.bezierCurveTo(cell.x - 8, cell.y + 154, cell.x - 20, cell.y + 188, cell.x - 62, cell.y + 174);
+        ctx.bezierCurveTo(cell.x - 96, cell.y + 164, cell.x - 106, cell.y + 132, cell.x - 140, cell.y + 124);
+        // left-side leg
+        ctx.bezierCurveTo(cell.x - 172, cell.y + 114, cell.x - 224, cell.y + 104, cell.x - 226, cell.y + 64);
+        ctx.bezierCurveTo(cell.x - 228, cell.y + 32, cell.x - 194, cell.y + 24, cell.x - 198, cell.y + 6);
+        ctx.closePath();
+        ctx.fillStyle = "#dce6f0";
+        ctx.strokeStyle = "#8fa2b8";
+        ctx.lineWidth = 6.5;
+        ctx.fill();
+        ctx.stroke();
+
+        // Inner membrane stroke to suggest phospholipid bilayer.
+        ctx.strokeStyle = "#f4f8fc";
+        ctx.lineWidth = 2.4;
+        ctx.stroke();
+
+        // Soft cytosol shading for a more realistic cell interior.
+        const cyto = ctx.createRadialGradient(cell.x + 24, cell.y + 4, 20, cell.x, cell.y, 200);
+        cyto.addColorStop(0, "rgba(245, 249, 252, 0.36)");
+        cyto.addColorStop(1, "rgba(201, 215, 229, 0.08)");
+        ctx.fillStyle = cyto;
+        ctx.fill();
+
+        // Nucleus + nucleolus.
+        ctx.beginPath();
+        ctx.fillStyle = "#a8bdd1";
+        ctx.ellipse(cell.x + 20, cell.y + 8, 68, 48, 0.12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = "#9fb3c8";
+        ctx.arc(cell.x + 30, cell.y + 16, 14, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (const [x, y] of loci) {
+          const a = 0.02 + 0.92 * glowStrength;
+          const grad = ctx.createRadialGradient(x, y, 2, x, y, 46);
+          grad.addColorStop(0, `rgba(37, 99, 235, ${a * 0.68})`);
+          grad.addColorStop(1, "rgba(59, 130, 246, 0)");
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, 46, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        const suffix = " foci";
+        ctx.font = `400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        const suffixW = ctx.measureText(suffix).width;
+        ctx.font = `italic 400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        const oW = ctx.measureText("O").width;
+        ctx.font = `400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        const ogW = oW + ctx.measureText("-GlcNAc").width;
+        const totalW = ogW + suffixW;
+        drawPhraseWithO("", suffix, cell.x - totalW / 2, 736, FONT_SIZE);
+      }
+
+      function drawZoomPanel(removed, pacPos, mouth) {
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1.8;
+        ctx.fillRect(zoom.x, zoom.y, zoom.w, zoom.h);
+        ctx.setLineDash([8, 6]);
+        ctx.strokeRect(zoom.x, zoom.y, zoom.w, zoom.h);
+        ctx.setLineDash([]);
+
+        for (let i = removed; i < sugarsInZoom.length; i++) {
+          const [x, y] = sugarsInZoom[i];
+          ctx.fillStyle = "#3579d0";
+          ctx.fillRect(x - 21, y - 21, 42, 42);
+          ctx.strokeStyle = "#1e4f8a";
+          ctx.lineWidth = 1.2;
+          ctx.setLineDash([]);
+          ctx.strokeRect(x - 21, y - 21, 42, 42);
+          ctx.setLineDash([]);
+        }
+
+        // OGA as Pac-Man
+        const px = Math.min(zoom.x + zoom.w - OGA_R - 8, Math.max(zoom.x + OGA_R + 8, pacPos.x));
+        const py = Math.min(zoom.y + zoom.h - OGA_R - 8, Math.max(zoom.y + OGA_R + 8, pacPos.y));
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.arc(px, py, OGA_R, mouth, Math.PI * 2 - mouth, false);
+        ctx.closePath();
+        ctx.fill();
+        drawLabel("OGA", px - 28, py + 8, FONT_SIZE, "#374151");
+
+      }
+
+      function drawConnector() {
+        const sxTop = sourceBox.x + sourceBox.s;
+        const syTop = sourceBox.y;
+        const sxBot = sourceBox.x + sourceBox.s;
+        const syBot = sourceBox.y + sourceBox.s;
+        const zxTop = zoom.x;
+        const zyTop = zoom.y;
+        const zxBot = zoom.x;
+        const zyBot = zoom.y + zoom.h;
+
+        // Subtle wedge to make zoom relationship visually obvious.
+        ctx.fillStyle = "rgba(148, 163, 184, 0.07)";
+        ctx.beginPath();
+        ctx.moveTo(sxTop, syTop);
+        ctx.lineTo(zxTop, zyTop);
+        ctx.lineTo(zxBot, zyBot);
+        ctx.lineTo(sxBot, syBot);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(sxTop, syTop);
+        ctx.lineTo(zxTop, zyTop);
+        ctx.moveTo(sxBot, syBot);
+        ctx.lineTo(zxBot, zyBot);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([6, 5]);
+        ctx.strokeRect(sourceBox.x, sourceBox.y, sourceBox.s, sourceBox.s);
+        ctx.setLineDash([]);
+      }
+
+      function spawnParticle(x, y) {
+        particles.push({
+          x,
+          y,
+          vx: 1.8 + Math.random() * 0.5,
+          vy: -0.45 + Math.random() * 0.8,
+          life: 1
+        });
+      }
+
+      function stepParticles() {
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.024;
+        }
+        particles = particles.filter((p) => p.life > 0 && p.x < zoom.x + zoom.w - 20);
+      }
+
+      function drawParticles() {
+        for (const p of particles) {
+          ctx.fillStyle = `rgba(53, 121, 208, ${Math.max(0.25, p.life)})`;
+          ctx.fillRect(p.x - 5, p.y - 5, 10, 10);
+        }
+      }
+
+      function frame(now) {
+        const phase = (now % loopMs) / loopMs;
+        ctx.clearRect(0, 0, W, H);
+
+        // Reset state once per loop at wrap-around.
+        if (phase < lastPhase) {
+          lastRemoved = 0;
+          particles = [];
+          pacCurrent.x = zoom.x + OGA_R + 16;
+          pacCurrent.y = zoom.y + zoom.h * 0.5;
+        }
+        lastPhase = phase;
+
+        let removed = lastRemoved;
+        let glow = 0.03;
+
+        if (phase < 0.15) {
+          removed = 0;
+          lastRemoved = 0;
+          glow = 0.02;
+        } else {
+          glow = 0.08 + (lastRemoved / sugarsInZoom.length) * 0.9;
+        }
+
+        let pacTarget = { x: zoom.x + OGA_R + 16, y: zoom.y + zoom.h * 0.5 };
+        if (phase >= 0.15 && phase < 0.94 && lastRemoved < sugarsInZoom.length) {
+          const [sx, sy] = sugarsInZoom[lastRemoved];
+          pacTarget = { x: sx - OGA_R * 0.62, y: sy };
+        } else if (phase >= 0.94) {
+          pacTarget = { x: zoom.x + zoom.w - OGA_R - 14, y: zoom.y + zoom.h * 0.5 };
+          glow = 0.9 + 0.08 * Math.sin(now * 0.004);
+        }
+
+        pacCurrent.x += (pacTarget.x - pacCurrent.x) * 0.09;
+        pacCurrent.y += (pacTarget.y - pacCurrent.y) * 0.09;
+        const mouth = 0.23 + Math.abs(Math.sin(now * 0.014)) * 0.34;
+
+        // Remove only when the next sugar reaches the Pac-Man mouth area.
+        if (phase >= 0.15 && phase < 0.95 && lastRemoved < sugarsInZoom.length) {
+          const [sx, sy] = sugarsInZoom[lastRemoved];
+          const mouthX = pacCurrent.x + OGA_R * 0.62;
+          const mouthY = pacCurrent.y;
+          if (Math.hypot(mouthX - sx, mouthY - sy) < 18) {
+            spawnParticle(sx + 10, sy);
+            lastRemoved += 1;
+          }
+        }
+        removed = lastRemoved;
+
+        drawMainCell(Math.max(0, Math.min(1, glow)));
+        drawConnector();
+        drawZoomPanel(removed, pacCurrent, mouth);
+
+        stepParticles();
+        drawParticles();
+
+        ctx.fillStyle = "#3579d0";
+        ctx.fillRect(20, 18, 42, 42);
+        ctx.strokeStyle = "#1e4f8a";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(20, 18, 42, 42);
+        drawOGlcNAcText(70, 47, FONT_SIZE);
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    </script>
+  </body>
+</html>

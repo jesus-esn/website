@@ -259,6 +259,15 @@ a {
   border-radius: 8px;
 }
 
+.pub-figure iframe.pub-animation {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
 .pub-content h3 {
   margin: 0;
 }
