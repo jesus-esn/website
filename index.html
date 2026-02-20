@@ -42,7 +42,13 @@
     <main class="container">
       <section class="hero" id="about">
         <div class="hero-copy">
-          <h1 class="hero-title">Jesús Serrano, PhD</h1>
+          <div class="name-row">
+            <h1 class="hero-title">Jesús Serrano, PhD</h1>
+            <button type="button" class="pronounce-button" id="pronounce-button" aria-label="Play name pronunciation">🔈</button>
+            <audio id="name-pronunciation" preload="none">
+              <source src="pronunciation.mp3" type="audio/mpeg" />
+            </audio>
+          </div>
           <p class="name-subtitle pronouns-line">Pronouns: he/they</p>
           <p class="dek">
             Hi, I'm a Puerto Rican biochemist, now living in Vancouver. My work
@@ -374,6 +380,15 @@
           pdfClose.addEventListener("click", closePdfPanel);
           document.addEventListener("keydown", function (event) {
             if (event.key === "Escape") closePdfPanel();
+          });
+        }
+
+        const pronounceButton = document.querySelector("#pronounce-button");
+        const pronunciationAudio = document.querySelector("#name-pronunciation");
+        if (pronounceButton && pronunciationAudio) {
+          pronounceButton.addEventListener("click", function () {
+            pronunciationAudio.currentTime = 0;
+            pronunciationAudio.play();
           });
         }
       })();

@@ -133,6 +133,26 @@ a:visited {
   color: #4b5563;
 }
 
+.name-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pronounce-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pronounce-button:hover {
+  color: var(--ink);
+}
+
 .name-subtitle {
   margin: 0.35rem 0 0;
   color: var(--muted);
