@@ -472,7 +472,7 @@ body.pdf-open .pdf-sidepanel {
 
 @media (min-width: 901px) {
   body.pdf-open .site-header {
-    left: 0.8rem;
+    left: max(0.8rem, calc((100vw - var(--content-max)) / 2 - var(--sidebar-w) - 3.2rem));
   }
 
   body.pdf-open main.container,
