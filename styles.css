@@ -246,7 +246,7 @@ a {
   border: 1px solid var(--rule);
   background: #ffffff;
   color: var(--ink);
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 0.34rem 0.78rem;
   font: inherit;
   font-size: 0.88rem;
@@ -340,11 +340,14 @@ a {
 }
 
 .more-button {
+  display: block;
   margin-top: 1rem;
+  margin-left: auto;
+  margin-right: auto;
   border: 1px solid var(--rule);
   background: #ffffff;
   color: var(--ink);
-  border-radius: 999px;
+  border-radius: 6px;
   padding: 0.34rem 0.78rem;
   font: inherit;
   font-size: 0.88rem;
