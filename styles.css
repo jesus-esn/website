@@ -2,6 +2,7 @@
   --content-max: 920px;
   --sidebar-w: 214px;
   --content-top: 3.8rem;
+  --pdf-pane-w: min(44vw, 620px);
   --ink: #0f172a;
   --muted: #475569;
   --rule: #dbe3ee;
@@ -412,6 +413,72 @@ li {
   bottom: 0.8rem;
 }
 
+.pdf-sidepanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--pdf-pane-w);
+  height: 100vh;
+  border-left: 1px solid var(--rule);
+  background: #ffffff;
+  box-shadow: -12px 0 26px rgba(15, 23, 42, 0.08);
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+body.pdf-open .pdf-sidepanel {
+  transform: translateX(0);
+}
+
+.pdf-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.pdf-panel-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+
+.pdf-close-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 0;
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.pdf-close-button:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+#pdf-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+}
+
+@media (min-width: 901px) {
+  body.pdf-open main.container,
+  body.pdf-open footer.container {
+    width: min(var(--content-max), calc(100% - var(--pdf-pane-w) - 5rem));
+    margin-left: auto;
+    margin-right: calc(var(--pdf-pane-w) + 1.6rem);
+  }
+}
+
 @media (min-width: 860px) {
   .hero {
     grid-template-columns: minmax(0, 1fr) 240px;
@@ -504,6 +571,10 @@ li {
     position: static;
     margin-top: 0.5rem;
     text-align: center;
+  }
+
+  .pdf-sidepanel {
+    display: none;
   }
 }
 

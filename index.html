@@ -268,41 +268,48 @@
       <a href="#top">Back to top</a>
       <p class="footer-note">© Feb 2026 · Created by Jesús Serrano</p>
     </footer>
+    <aside class="pdf-sidepanel" id="pdf-panel" aria-label="PDF viewer panel">
+      <div class="pdf-panel-header">
+        <p class="pdf-panel-title" id="pdf-panel-title">Document preview</p>
+        <button type="button" class="pdf-close-button" id="pdf-close">Close</button>
+      </div>
+      <iframe id="pdf-frame" title="PDF preview" src="about:blank"></iframe>
+    </aside>
     <script>
       (function () {
         const publicationsSection = document.querySelector("#publications");
-        if (!publicationsSection) return;
+        if (publicationsSection) {
+          const pubList = publicationsSection.querySelector(".pub-list");
+          const items = Array.from(publicationsSection.querySelectorAll(".pub-item"));
+          const prevButton = publicationsSection.querySelector("#pub-prev");
+          const nextButton = publicationsSection.querySelector("#pub-next");
+          const counter = publicationsSection.querySelector("#pub-counter");
+          if (pubList && items.length > 0 && prevButton && nextButton && counter) {
+            let activeIndex = 0;
+            pubList.classList.add("pub-carousel-enabled");
 
-        const pubList = publicationsSection.querySelector(".pub-list");
-        const items = Array.from(publicationsSection.querySelectorAll(".pub-item"));
-        const prevButton = publicationsSection.querySelector("#pub-prev");
-        const nextButton = publicationsSection.querySelector("#pub-next");
-        const counter = publicationsSection.querySelector("#pub-counter");
-        if (!pubList || items.length === 0 || !prevButton || !nextButton || !counter) return;
+            function render() {
+              items.forEach((item, index) => {
+                const isActive = index === activeIndex;
+                item.classList.toggle("is-active", isActive);
+                item.setAttribute("aria-hidden", String(!isActive));
+              });
+              counter.textContent = activeIndex + 1 + " / " + items.length;
+            }
 
-        let activeIndex = 0;
-        pubList.classList.add("pub-carousel-enabled");
+            prevButton.addEventListener("click", function () {
+              activeIndex = (activeIndex - 1 + items.length) % items.length;
+              render();
+            });
 
-        function render() {
-          items.forEach((item, index) => {
-            const isActive = index === activeIndex;
-            item.classList.toggle("is-active", isActive);
-            item.setAttribute("aria-hidden", String(!isActive));
-          });
-          counter.textContent = activeIndex + 1 + " / " + items.length;
+            nextButton.addEventListener("click", function () {
+              activeIndex = (activeIndex + 1) % items.length;
+              render();
+            });
+
+            render();
+          }
         }
-
-        prevButton.addEventListener("click", function () {
-          activeIndex = (activeIndex - 1 + items.length) % items.length;
-          render();
-        });
-
-        nextButton.addEventListener("click", function () {
-          activeIndex = (activeIndex + 1) % items.length;
-          render();
-        });
-
-        render();
 
         const previewLimit = 3;
         const previewSections = ["#experience", "#education", "#training", "#volunteer"];
@@ -339,6 +346,38 @@
 
           section.appendChild(toggle);
         });
+
+        const pdfPanel = document.querySelector("#pdf-panel");
+        const pdfFrame = document.querySelector("#pdf-frame");
+        const pdfClose = document.querySelector("#pdf-close");
+        const pdfTitle = document.querySelector("#pdf-panel-title");
+        const desktopView = window.matchMedia("(min-width: 901px)");
+
+        function closePdfPanel() {
+          document.body.classList.remove("pdf-open");
+          if (pdfFrame) pdfFrame.src = "about:blank";
+        }
+
+        if (pdfPanel && pdfFrame && pdfClose && pdfTitle) {
+          const links = Array.from(document.querySelectorAll("a[href]"));
+          links.forEach(function (link) {
+            const href = link.getAttribute("href") || "";
+            if (!/\.pdf(?:$|[?#])/i.test(href)) return;
+
+            link.addEventListener("click", function (event) {
+              if (!desktopView.matches) return;
+              event.preventDefault();
+              pdfTitle.textContent = (link.textContent || "Document").trim() || "Document";
+              pdfFrame.src = href;
+              document.body.classList.add("pdf-open");
+            });
+          });
+
+          pdfClose.addEventListener("click", closePdfPanel);
+          document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") closePdfPanel();
+          });
+        }
       })();
     </script>
   </body>
