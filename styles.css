@@ -184,6 +184,11 @@ a:visited {
   text-align: left;
 }
 
+.open-work-links {
+  margin-top: 0.3rem;
+  font-size: 0.94rem;
+}
+
 .meta-grid {
   margin-top: 1rem;
   display: grid;
