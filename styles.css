@@ -472,13 +472,13 @@ body.pdf-open .pdf-sidepanel {
 
 @media (min-width: 901px) {
   body.pdf-open .site-header {
-    left: max(0.8rem, calc((100vw - var(--content-max)) / 2 - var(--sidebar-w) - 3.2rem));
+    left: max(0.8rem, calc((100vw - var(--content-max)) / 2 - var(--sidebar-w) - 0.35rem));
   }
 
   body.pdf-open main.container,
   body.pdf-open footer.container {
-    width: min(var(--content-max), calc(100% - var(--pdf-pane-w) - 5rem));
-    margin-left: auto;
+    width: calc(100% - var(--sidebar-w) - var(--pdf-pane-w) - 6rem);
+    margin-left: calc(var(--sidebar-w) + 3.2rem);
     margin-right: calc(var(--pdf-pane-w) + 1.6rem);
   }
 }
