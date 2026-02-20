@@ -283,6 +283,42 @@
         });
 
         render();
+
+        const previewLimit = 3;
+        const previewSections = ["#experience", "#education", "#training", "#volunteer"];
+
+        previewSections.forEach(function (selector) {
+          const section = document.querySelector(selector);
+          if (!section) return;
+
+          const roleItems = Array.from(section.querySelectorAll(":scope > .role"));
+          const listItems = Array.from(section.querySelectorAll(":scope > ul > li"));
+          const items = roleItems.length > 0 ? roleItems : listItems;
+
+          if (items.length <= previewLimit) return;
+
+          items.forEach(function (item, index) {
+            if (index >= previewLimit) item.hidden = true;
+          });
+
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "more-button";
+          toggle.textContent = "More";
+          toggle.setAttribute("aria-expanded", "false");
+
+          toggle.addEventListener("click", function () {
+            const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+            toggle.setAttribute("aria-expanded", String(!isExpanded));
+            toggle.textContent = isExpanded ? "More" : "Less";
+
+            items.forEach(function (item, index) {
+              item.hidden = !isExpanded ? false : index >= previewLimit;
+            });
+          });
+
+          section.appendChild(toggle);
+        });
       })();
     </script>
   </body>

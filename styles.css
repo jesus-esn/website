@@ -339,6 +339,24 @@ a {
   font-size: 0.93rem;
 }
 
+.more-button {
+  margin-top: 1rem;
+  border: 1px solid var(--rule);
+  background: #ffffff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.34rem 0.78rem;
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.more-button:hover {
+  border-color: #c7d4e6;
+  background: #f7faff;
+}
+
 .edu-degree {
   margin: 0;
   color: var(--ink);
