@@ -166,14 +166,19 @@ a:visited {
   display: inline-flex;
   align-items: center;
   gap: 0.36rem;
-  padding: 0.22rem 0.62rem;
-  border: 1px solid #a8b4c8;
-  border-radius: 5px;
-  background: #eef3fb;
-  color: #0f172a;
+  padding: 0.34rem 0.82rem;
+  border: 1px solid #1f2937;
+  border-radius: 999px;
+  background: #374151;
+  color: #ffffff;
   text-decoration: none;
   font-size: 0.84rem;
+  font-weight: 500;
   line-height: 1.2;
+}
+
+.open-work-button:visited {
+  color: #ffffff;
 }
 
 .ow-icon {
@@ -189,8 +194,16 @@ a:visited {
   display: block;
 }
 
+.ow-emoji {
+  font-size: 1em;
+  line-height: 1;
+  display: inline-block;
+}
+
 .open-work-button:hover {
-  background: #dfe8f6;
+  background: #1f2937;
+  border-color: #111827;
+  color: #ffffff;
   text-decoration: none;
 }
 
