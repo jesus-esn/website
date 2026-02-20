@@ -339,6 +339,24 @@ a {
   font-size: 0.93rem;
 }
 
+.role-tags {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.skill-tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  color: #334155;
+  border: 1px solid #d6deea;
+  background: #f8fbff;
+  border-radius: 4px;
+  padding: 0.18rem 0.45rem;
+}
+
 .more-button {
   display: block;
   margin-top: 1rem;
