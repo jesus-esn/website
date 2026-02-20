@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CO2 Carboxylation Animation Preview</title>
+    <style>
+      :root {
+        --line: #d9e2ec;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Aptos, "Libre Franklin", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .wrap {
+        width: min(1000px, calc(100% - 2rem));
+        margin: 1rem auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.9rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0 0 0.7rem;
+        font-size: 0.92rem;
+        color: #334155;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      body.embed-mode .wrap {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+      }
+
+      body.embed-mode h1,
+      body.embed-mode p {
+        display: none;
+      }
+
+      body.embed-mode canvas {
+        border: 0;
+        border-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>CO2-dependent lysine carboxylation preview</h1>
+      <p>Three CO2 molecules attach to three lysines, and the detected peak intensity increases from 1 to 3.</p>
+      <canvas id="scene" width="900" height="600" aria-label="CO2 carboxylation animation"></canvas>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("embed") === "1") {
+        document.body.classList.add("embed-mode");
+      }
+
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d");
+      const viewW = 900;
+      const viewH = 600;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewW * dpr);
+      canvas.height = Math.floor(viewH * dpr);
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const W = viewW;
+      const H = viewH;
+      const loopMs = 9000;
+
+      const protein = {
+        cx: 260,
+        cy: 300,
+        points: [
+          [140, 300], [175, 250], [225, 240], [260, 200], [310, 210],
+          [350, 250], [395, 265], [410, 310], [382, 360], [330, 390],
+          [275, 405], [210, 388], [165, 350]
+        ]
+      };
+
+      const lysines = [
+        { x: 206, y: 258, label: "Lys" },
+        { x: 292, y: 232, label: "Lys" },
+        { x: 338, y: 326, label: "Lys" }
+      ];
+
+      const co2Start = [
+        { x: 120, y: 110 },
+        { x: 250, y: 82 },
+        { x: 365, y: 104 }
+      ];
+
+      const stepStart = [0.1, 0.36, 0.62];
+      const stepDur = 0.18;
+
+      function clamp01(v) {
+        return Math.max(0, Math.min(1, v));
+      }
+
+      function ease(t) {
+        const k = clamp01(t);
+        return k * k * (3 - 2 * k);
+      }
+
+      function stepProgress(p, i) {
+        return ease((p - stepStart[i]) / stepDur);
+      }
+
+      function attachedCount(p) {
+        let count = 0;
+        for (let i = 0; i < 3; i += 1) {
+          if (stepProgress(p, i) >= 1) count += 1;
+        }
+        return count;
+      }
+
+      function drawProtein() {
+        ctx.beginPath();
+        ctx.moveTo(protein.points[0][0], protein.points[0][1]);
+        for (let i = 1; i < protein.points.length; i += 1) {
+          const [x, y] = protein.points[i];
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = "#dbe7f4";
+        ctx.strokeStyle = "#8fa4bd";
+        ctx.lineWidth = 5;
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#111827";
+        ctx.font = '400 24px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.fillText("Protein", 225, 445);
+      }
+
+      function drawLysines() {
+        for (let i = 0; i < lysines.length; i += 1) {
+          const l = lysines[i];
+          ctx.beginPath();
+          ctx.arc(l.x, l.y, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f59e0b";
+          ctx.fill();
+          ctx.strokeStyle = "#92400e";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.fillStyle = "#111827";
+          ctx.font = '400 18px Aptos, "Libre Franklin", Arial, sans-serif';
+          ctx.fillText(l.label, l.x - 16, l.y + 34);
+        }
+      }
+
+      function drawCO2At(x, y, attached) {
+        ctx.beginPath();
+        ctx.arc(x, y, 17, 0, Math.PI * 2);
+        ctx.fillStyle = attached ? "#ef4444" : "#fda4af";
+        ctx.fill();
+        ctx.strokeStyle = attached ? "#991b1b" : "#be123c";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = '700 14px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.fillText("CO2", x - 12, y + 5);
+      }
+
+      function drawPeakPanel(count, pulse) {
+        const x0 = 520;
+        const y0 = 110;
+        const w = 320;
+        const h = 330;
+
+        ctx.strokeStyle = "#cbd5e1";
+        ctx.lineWidth = 1.8;
+        ctx.strokeRect(x0, y0, w, h);
+
+        ctx.strokeStyle = "#111827";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(x0 + 45, y0 + h - 45);
+        ctx.lineTo(x0 + 45, y0 + 40);
+        ctx.lineTo(x0 + w - 26, y0 + h - 45);
+        ctx.stroke();
+
+        ctx.fillStyle = "#111827";
+        ctx.font = '400 20px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.fillText("Signal", x0 + 14, y0 + 34);
+        ctx.fillText("m/z", x0 + w - 58, y0 + h - 12);
+
+        const baseY = y0 + h - 45;
+        const peakX = x0 + 190;
+        const maxH = 220;
+        const target = count / 3;
+        const peakH = maxH * (0.12 + 0.88 * target) * (1 + pulse * 0.06);
+
+        ctx.strokeStyle = "#2563eb";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(x0 + 45, baseY);
+        ctx.lineTo(peakX - 28, baseY);
+        ctx.lineTo(peakX, baseY - peakH);
+        ctx.lineTo(peakX + 28, baseY);
+        ctx.lineTo(x0 + w - 26, baseY);
+        ctx.stroke();
+
+        ctx.fillStyle = "#0f172a";
+        ctx.font = '600 24px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.fillText(count + " CO2 attached", x0 + 108, y0 + 74);
+      }
+
+      function frame(now) {
+        const p = (now % loopMs) / loopMs;
+        ctx.clearRect(0, 0, W, H);
+
+        drawProtein();
+        drawLysines();
+
+        for (let i = 0; i < 3; i += 1) {
+          const prog = stepProgress(p, i);
+          const sx = co2Start[i].x;
+          const sy = co2Start[i].y;
+          const tx = lysines[i].x;
+          const ty = lysines[i].y - 26;
+          const x = sx + (tx - sx) * prog;
+          const y = sy + (ty - sy) * prog;
+
+          drawCO2At(x, y, prog >= 1);
+
+          if (prog >= 1) {
+            ctx.strokeStyle = "#7f1d1d";
+            ctx.lineWidth = 2.2;
+            ctx.beginPath();
+            ctx.moveTo(lysines[i].x, lysines[i].y - 13);
+            ctx.lineTo(x, y + 17);
+            ctx.stroke();
+          }
+
+          if (prog > 0 && prog < 1) {
+            ctx.strokeStyle = "rgba(127, 29, 29, 0.35)";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+          }
+        }
+
+        const count = attachedCount(p);
+        const pulse = Math.sin(now * 0.01);
+        drawPeakPanel(count, pulse);
+
+        ctx.fillStyle = "#111827";
+        ctx.font = '400 21px Aptos, "Libre Franklin", Arial, sans-serif';
+        ctx.fillText("Stepwise lysine carboxylation", 145, 84);
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    </script>
+  </body>
+</html>
