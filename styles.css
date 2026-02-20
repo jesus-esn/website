@@ -75,36 +75,6 @@ a:hover {
   text-decoration: underline;
 }
 
-.nav-group {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.nav-submenu {
-  display: none;
-  margin-top: 0.35rem;
-  padding: 0.45rem 0.6rem;
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
-}
-
-.nav-submenu a {
-  display: block;
-  white-space: nowrap;
-  padding: 0.15rem 0;
-  font-size: 0.9rem;
-  text-align: right;
-}
-
-.nav-group:hover .nav-submenu,
-.nav-group:focus-within .nav-submenu {
-  display: block;
-}
-
 main {
   padding: calc(var(--content-top) + 1.2rem) 0 6.2rem;
 }
@@ -566,19 +536,6 @@ body.pdf-open .pdf-sidepanel {
     font-size: 0.86rem;
     font-weight: 500;
     padding: 0;
-    text-align: center;
-  }
-
-  .nav-group {
-    align-items: center;
-  }
-
-  .nav-submenu {
-    position: static;
-    margin-top: 0.2rem;
-  }
-
-  .nav-submenu a {
     text-align: center;
   }
 
