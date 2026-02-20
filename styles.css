@@ -19,7 +19,7 @@
 body {
   margin: 0;
   padding-left: 0;
-  font-family: "Merriweather", Georgia, serif;
+  font-family: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
   color: var(--ink);
   background:
     linear-gradient(180deg, #f9fbff 0%, #f1f6fd 100%);
@@ -281,7 +281,7 @@ a:visited {
 }
 
 .pub-item {
-  padding: 0.75rem 0;
+  padding: 1.2rem 0;
   display: grid;
   grid-template-columns: 230px minmax(0, 1fr);
   gap: 1.25rem;
@@ -345,7 +345,7 @@ a:visited {
 }
 
 .role {
-  padding: 0.62rem 0;
+  padding: 1.15rem 0;
   border-bottom: 1px solid #e5ebf3;
 }
 
@@ -361,7 +361,7 @@ a:visited {
 }
 
 .role-tags {
-  margin-top: 0.42rem;
+  margin-top: 0.7rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
@@ -413,7 +413,7 @@ ul {
 }
 
 li {
-  margin: 0.32rem 0;
+  margin: 0.6rem 0;
 }
 
 .site-footer {
