@@ -52,42 +52,66 @@
         border-radius: 10px;
         background: #ffffff;
       }
+
+      body.embed-mode .wrap {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        background: #ffffff;
+      }
+
+      body.embed-mode h1,
+      body.embed-mode p {
+        display: none;
+      }
+
+      body.embed-mode canvas {
+        border: 0;
+        border-radius: 0;
+      }
     </style>
   </head>
   <body>
     <main class="wrap">
       <h1>Preview: OGA removing O-GlcNAc from tissue</h1>
       <p>Loop: OGA (Pac-Man) removes O-GlcNAc in a zoomed view while blue foci light up in the cell.</p>
-      <canvas id="scene" width="760" height="760" aria-label="Animation preview"></canvas>
+      <canvas id="scene" width="900" height="450" aria-label="Animation preview"></canvas>
     </main>
 
     <script>
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("embed") === "1") {
+        document.body.classList.add("embed-mode");
+      }
+
       const canvas = document.getElementById("scene");
       const ctx = canvas.getContext("2d");
-      const viewW = 760;
-      const viewH = 760;
+      const viewW = 900;
+      const viewH = 600;
       const dpr = window.devicePixelRatio || 1;
       canvas.width = Math.floor(viewW * dpr);
       canvas.height = Math.floor(viewH * dpr);
-      canvas.style.width = `${viewW}px`;
-      canvas.style.height = `${viewH}px`;
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       const W = viewW;
       const H = viewH;
 
-      const cell = { x: 240, y: 530, rx: 152, ry: 126 };
-      const zoom = { x: 300, y: 40, w: 430, h: 430 };
-      const FONT_SIZE = 24;
-      const OGA_R = 70;
+      const cell = { x: 240, y: 398, rx: 152, ry: 126 };
+      const zoom = { x: 470, y: 34, w: 400, h: 390 };
+      const FONT_SIZE = 56;
+      const OGA_R = 78;
       const loopMs = 12000;
       const loci = [
-        [146, 500], [246, 456], [324, 536], [204, 604]
+        [144, 398], [236, 328], [328, 404], [214, 500]
       ];
       const sourceBox = { x: loci[0][0] - 16, y: loci[0][1] - 16, s: 32 };
       const sugarsInZoom = [
-        [348, 150], [410, 304], [522, 170], [616, 334], [694, 206]
+        [516, 92], [574, 292], [658, 120], [746, 300], [832, 194]
       ];
       let particles = [];
       let lastRemoved = 0;
@@ -101,28 +125,28 @@
 
       function drawLabel(text, x, y, size = FONT_SIZE, color = "#000000") {
         ctx.fillStyle = color;
-        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
         ctx.fillText(text, x, y);
       }
 
       function drawOGlcNAcText(x, y, size = FONT_SIZE, color = "#000000") {
         ctx.fillStyle = color;
-        ctx.font = `italic 400 ${size}px Libre Franklin, Arial`;
+        ctx.font = `italic 400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
         ctx.fillText("O", x, y);
         const wO = ctx.measureText("O").width;
-        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
         ctx.fillText("-GlcNAc", x + wO, y);
         return wO + ctx.measureText("-GlcNAc").width;
       }
 
       function drawPhraseWithO(prefix, suffix, x, y, size = FONT_SIZE, color = "#000000") {
         ctx.fillStyle = color;
-        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
         ctx.fillText(prefix, x, y);
         const wp = ctx.measureText(prefix).width;
         const wo = drawOGlcNAcText(x + wp, y, size, color);
         ctx.fillStyle = color;
-        ctx.font = `400 ${size}px Libre Franklin, Arial`;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
         ctx.fillText(suffix, x + wp + wo, y);
       }
 
@@ -186,14 +210,14 @@
         }
 
         const suffix = " foci";
-        ctx.font = `400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        ctx.font = `400 ${FONT_SIZE}px Aptos, "Libre Franklin", Arial, sans-serif`;
         const suffixW = ctx.measureText(suffix).width;
-        ctx.font = `italic 400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        ctx.font = `italic 400 ${FONT_SIZE}px Aptos, "Libre Franklin", Arial, sans-serif`;
         const oW = ctx.measureText("O").width;
-        ctx.font = `400 ${FONT_SIZE}px Libre Franklin, Arial`;
+        ctx.font = `400 ${FONT_SIZE}px Aptos, "Libre Franklin", Arial, sans-serif`;
         const ogW = oW + ctx.measureText("-GlcNAc").width;
         const totalW = ogW + suffixW;
-        drawPhraseWithO("", suffix, cell.x - totalW / 2, 736, FONT_SIZE);
+        drawPhraseWithO("", suffix, cell.x + 188, 524, FONT_SIZE);
       }
 
       function drawZoomPanel(removed, pacPos, mouth) {
@@ -210,7 +234,7 @@
           ctx.fillStyle = "#3579d0";
           ctx.fillRect(x - 21, y - 21, 42, 42);
           ctx.strokeStyle = "#1e4f8a";
-          ctx.lineWidth = 1.2;
+          ctx.lineWidth = 2.4;
           ctx.setLineDash([]);
           ctx.strokeRect(x - 21, y - 21, 42, 42);
           ctx.setLineDash([]);
@@ -225,7 +249,7 @@
         ctx.arc(px, py, OGA_R, mouth, Math.PI * 2 - mouth, false);
         ctx.closePath();
         ctx.fill();
-        drawLabel("OGA", px - 28, py + 8, FONT_SIZE, "#374151");
+        drawLabel("OGA", px - 46, py + 16, FONT_SIZE, "#374151");
 
       }
 
@@ -349,12 +373,18 @@
         stepParticles();
         drawParticles();
 
+        const legendX = 44;
+        const legendY = 38;
+        const legendS = 42;
         ctx.fillStyle = "#3579d0";
-        ctx.fillRect(20, 18, 42, 42);
+        ctx.fillRect(legendX, legendY, legendS, legendS);
         ctx.strokeStyle = "#1e4f8a";
         ctx.lineWidth = 1;
-        ctx.strokeRect(20, 18, 42, 42);
-        drawOGlcNAcText(70, 47, FONT_SIZE);
+        ctx.strokeRect(legendX, legendY, legendS, legendS);
+        const prevBaseline = ctx.textBaseline;
+        ctx.textBaseline = "middle";
+        drawOGlcNAcText(legendX + legendS + 20, legendY + legendS / 2, FONT_SIZE);
+        ctx.textBaseline = prevBaseline;
         requestAnimationFrame(frame);
       }
 
