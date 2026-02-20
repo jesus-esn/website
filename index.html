@@ -82,30 +82,6 @@
         </figure>
       </section>
 
-      <section class="story-block" id="experience">
-        <h2>Experience</h2>
-        <article class="role">
-          <h3>Scientist &amp; R&amp;D Project Manager</h3>
-          <p class="role-meta"><a href="https://www.lite-1.bio/" target="_blank" rel="noreferrer">Lite-1</a>, Vancouver BC · Jun 2025 - Jan 2026</p>
-          <p>Led microbial pigment R&amp;D workflows from design through assay development, optimization, QC, and scale-up handoff planning.</p>
-        </article>
-        <article class="role">
-          <h3>Research Assistant</h3>
-          <p class="role-meta"><a href="https://www.sfu.ca/" target="_blank" rel="noreferrer">Simon Fraser University</a>, Burnaby BC · Jan 2018 - Jan 2025</p>
-          <p>Drove glycosylation-focused biochemistry and biophysics workflows, including validation pipelines and analytical strategy development.</p>
-        </article>
-        <article class="role">
-          <h3>Research Assistant</h3>
-          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2013 - Nov 2017</p>
-          <p>Built cell-based assay systems, microscopy and flow workflows, and biochemical validation procedures for reproducible readouts.</p>
-        </article>
-        <article class="role">
-          <h3>Research Ethics Board (REB) Officer</h3>
-          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2016 - May 2019</p>
-          <p>Supported protocol and informed-consent compliance processes for human-subject research oversight.</p>
-        </article>
-      </section>
-
       <section class="story-block" id="publications">
         <h2>Recent Publications</h2>
         <p class="section-intro">
@@ -114,7 +90,12 @@
         <div class="pub-list">
           <article class="pub-item">
             <figure class="pub-figure">
-              <img src="2022_King_OGlcNAcMeltome.jpg" alt="Concept diagram for O-GlcNAc-dependent meltome thermal profiling." />
+              <iframe
+                class="pub-animation"
+                src="meltome-animation-preview.html?embed=1"
+                title="Animated meltome model with O-GlcNAc stabilization"
+                loading="lazy"
+              ></iframe>
             </figure>
             <div class="pub-content">
               <h3><a href="2022_King_OGlcNAcMeltome.pdf" target="_blank" rel="noreferrer">Thermal proteome profiling reveals the <em>O</em>-GlcNAc-dependent meltome.</a></h3>
@@ -150,6 +131,35 @@
             </div>
           </article>
         </div>
+        <div class="pub-controls" aria-label="Publication carousel controls">
+          <button type="button" class="pub-nav-button" id="pub-prev" aria-label="Previous publication">Previous</button>
+          <span class="pub-counter" id="pub-counter" aria-live="polite"></span>
+          <button type="button" class="pub-nav-button" id="pub-next" aria-label="Next publication">Next</button>
+        </div>
+      </section>
+
+      <section class="story-block" id="experience">
+        <h2>Experience</h2>
+        <article class="role">
+          <h3>Scientist &amp; R&amp;D Project Manager</h3>
+          <p class="role-meta"><a href="https://www.lite-1.bio/" target="_blank" rel="noreferrer">Lite-1</a>, Vancouver BC · Jun 2025 - Jan 2026</p>
+          <p>Led microbial pigment R&amp;D workflows from design through assay development, optimization, QC, and scale-up handoff planning.</p>
+        </article>
+        <article class="role">
+          <h3>Research Assistant</h3>
+          <p class="role-meta"><a href="https://www.sfu.ca/" target="_blank" rel="noreferrer">Simon Fraser University</a>, Burnaby BC · Jan 2018 - Jan 2025</p>
+          <p>Drove glycosylation-focused biochemistry and biophysics workflows, including validation pipelines and analytical strategy development.</p>
+        </article>
+        <article class="role">
+          <h3>Research Assistant</h3>
+          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2013 - Nov 2017</p>
+          <p>Built cell-based assay systems, microscopy and flow workflows, and biochemical validation procedures for reproducible readouts.</p>
+        </article>
+        <article class="role">
+          <h3>Research Ethics Board (REB) Officer</h3>
+          <p class="role-meta"><a href="https://www.upr.edu/" target="_blank" rel="noreferrer">University of Puerto Rico</a>, San Juan PR · Aug 2016 - May 2019</p>
+          <p>Supported protocol and informed-consent compliance processes for human-subject research oversight.</p>
+        </article>
       </section>
 
       <section class="story-block" id="education">
@@ -233,5 +243,43 @@
       <a href="#top">Back to top</a>
       <p class="footer-note">© Feb 2026 · Created by Jesús Serrano</p>
     </footer>
+    <script>
+      (function () {
+        const publicationsSection = document.querySelector("#publications");
+        if (!publicationsSection) return;
+
+        const pubList = publicationsSection.querySelector(".pub-list");
+        const items = Array.from(publicationsSection.querySelectorAll(".pub-item"));
+        const prevButton = publicationsSection.querySelector("#pub-prev");
+        const nextButton = publicationsSection.querySelector("#pub-next");
+        const counter = publicationsSection.querySelector("#pub-counter");
+
+        if (!pubList || items.length === 0 || !prevButton || !nextButton || !counter) return;
+
+        let activeIndex = 0;
+        pubList.classList.add("pub-carousel-enabled");
+
+        function render() {
+          items.forEach((item, index) => {
+            const isActive = index === activeIndex;
+            item.classList.toggle("is-active", isActive);
+            item.setAttribute("aria-hidden", String(!isActive));
+          });
+          counter.textContent = activeIndex + 1 + " / " + items.length;
+        }
+
+        prevButton.addEventListener("click", function () {
+          activeIndex = (activeIndex - 1 + items.length) % items.length;
+          render();
+        });
+
+        nextButton.addEventListener("click", function () {
+          activeIndex = (activeIndex + 1) % items.length;
+          render();
+        });
+
+        render();
+      })();
+    </script>
   </body>
 </html>

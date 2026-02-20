@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meltome Animation Preview</title>
+    <style>
+      :root {
+        --line: #d9e2ec;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Aptos, "Libre Franklin", Arial, sans-serif;
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .wrap {
+        width: min(1000px, calc(100% - 2rem));
+        margin: 1rem auto;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 0.9rem;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      p {
+        margin: 0 0 0.7rem;
+        font-size: 0.92rem;
+        color: #334155;
+      }
+
+      canvas {
+        width: 100%;
+        height: auto;
+        display: block;
+        background: #ffffff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+      }
+
+      body.embed-mode .wrap {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+      }
+
+      body.embed-mode h1,
+      body.embed-mode p {
+        display: none;
+      }
+
+      body.embed-mode canvas {
+        border: 0;
+        border-radius: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <h1>Meltome preview</h1>
+      <p>Two proteins under heat; O-GlcNAc-stabilized protein unfolds slower.</p>
+      <canvas id="scene" width="900" height="600" aria-label="Meltome animation"></canvas>
+    </main>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("embed") === "1") {
+        document.body.classList.add("embed-mode");
+      }
+
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d");
+      const viewW = 900;
+      const viewH = 600;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewW * dpr);
+      canvas.height = Math.floor(viewH * dpr);
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      const W = viewW;
+      const H = viewH;
+      const loopMs = 9000;
+
+      const leftProtein = { x: 250, y: 250 };
+      const rightProtein = { x: 650, y: 250 };
+      const flameY = 430;
+      const LABEL_SIZE = 56;
+
+      function drawText(text, x, y, size = LABEL_SIZE, color = "#000000") {
+        ctx.fillStyle = color;
+        ctx.font = `400 ${size}px Aptos, "Libre Franklin", Arial, sans-serif`;
+        ctx.fillText(text, x, y);
+      }
+
+      function drawFlame(cx, cy, intensity) {
+        const h = 92 + intensity * 14;
+        const w = 66 + intensity * 8;
+
+        // Clean symmetric outer flame.
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.bezierCurveTo(cx - w * 0.58, cy - h * 0.16, cx - w * 0.44, cy - h * 0.72, cx, cy - h);
+        ctx.bezierCurveTo(cx + w * 0.44, cy - h * 0.72, cx + w * 0.58, cy - h * 0.16, cx, cy);
+        ctx.closePath();
+        ctx.fillStyle = "#dc2626";
+        ctx.fill();
+
+        // Inner orange flame.
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - h * 0.06);
+        ctx.bezierCurveTo(cx - w * 0.33, cy - h * 0.2, cx - w * 0.2, cy - h * 0.58, cx, cy - h * 0.74);
+        ctx.bezierCurveTo(cx + w * 0.2, cy - h * 0.58, cx + w * 0.33, cy - h * 0.2, cx, cy - h * 0.06);
+        ctx.closePath();
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+
+        // Yellow core.
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - h * 0.14);
+        ctx.bezierCurveTo(cx - w * 0.18, cy - h * 0.26, cx - w * 0.1, cy - h * 0.44, cx, cy - h * 0.54);
+        ctx.bezierCurveTo(cx + w * 0.1, cy - h * 0.44, cx + w * 0.18, cy - h * 0.26, cx, cy - h * 0.14);
+        ctx.closePath();
+        ctx.fillStyle = "#facc15";
+        ctx.fill();
+      }
+
+      function ropePoint(cx, cy, unfold, variant, vib, t) {
+        const cluster = 1 - unfold;
+        const len = 78 + unfold * 328;
+        const loopAmp = 34 * cluster + 8;
+        const yAmp = 14 + cluster * 12;
+        const phase = 0.8 + variant * 1.2;
+        const loop = (Math.PI * 2 * 3.0 * t) + phase;
+        const xBase = cx + (t - 0.5) * len;
+        const x = xBase + Math.cos(loop) * loopAmp * 0.45 * cluster;
+        const yBase =
+          cy +
+          Math.sin(loop) * loopAmp +
+          Math.sin((Math.PI * 2 * 1.2 * t) + phase * 0.5) * yAmp;
+        const y = yBase + vib * (0.55 + 0.45 * Math.sin((Math.PI * 2 * 5.2 * t) + phase));
+        return { x, y };
+      }
+
+      function ropeTopCenter(cx, cy, unfold, variant, vib) {
+        const pts = [];
+        const n = 180;
+        let minY = Infinity;
+        for (let i = 0; i < n; i++) {
+          const t = i / (n - 1);
+          const p = ropePoint(cx, cy, unfold, variant, vib, t);
+          pts.push(p);
+          if (p.y < minY) minY = p.y;
+        }
+        let sx = 0;
+        let c = 0;
+        for (const p of pts) {
+          if (p.y <= minY + 8) {
+            sx += p.x;
+            c += 1;
+          }
+        }
+        return { x: c ? sx / c : cx, y: minY };
+      }
+
+      function drawRopeProtein(cx, cy, unfold, color, variant = 0, vib = 0) {
+        // Non-rotating rope: 3-loop tangle -> elongated denatured chain.
+        const points = 220;
+        const cluster = 1 - unfold;
+        const len = 46 + unfold * 156;
+        const loopAmp = 34 * cluster + 8;
+        const yAmp = 14 + cluster * 12;
+        const phase = 0.8 + variant * 1.2;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 17;
+        ctx.beginPath();
+
+        for (let i = 0; i <= points; i++) {
+          const t = i / points;
+          const pt = ropePoint(cx, cy, unfold, variant, vib, t);
+          const x = pt.x;
+          const y = pt.y;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+
+        ctx.stroke();
+      }
+
+      function drawOGlcNAcTagAttached(anchorX, anchorY) {
+        const sq = 40;
+        const tagX = anchorX - sq / 2;
+        const tagY = anchorY - 86;
+        // Simple bond-like connector to suggest chemical attachment.
+        ctx.strokeStyle = "#1f2937";
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        ctx.moveTo(anchorX, anchorY);
+        ctx.lineTo(anchorX, tagY + sq);
+        ctx.stroke();
+
+        ctx.fillStyle = "#3579d0";
+        ctx.fillRect(tagX, tagY, sq, sq);
+        ctx.strokeStyle = "#1e4f8a";
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(tagX, tagY, sq, sq);
+      }
+
+      function drawChargeLabel(symbol, text, x, y, symbolColor) {
+        ctx.fillStyle = symbolColor;
+        ctx.beginPath();
+        ctx.arc(x, y - 16, 26, 0, Math.PI * 2);
+        ctx.fill();
+        // Draw charge symbol as vector strokes for exact centering.
+        const cx = x;
+        const cy = y - 16;
+        const s = 14;
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 5.6;
+        ctx.beginPath();
+        ctx.moveTo(cx - s, cy);
+        ctx.lineTo(cx + s, cy);
+        if (symbol === "+") {
+          ctx.moveTo(cx, cy - s);
+          ctx.lineTo(cx, cy + s);
+        }
+        ctx.stroke();
+        drawText(text, x + 38, y, 56, "#000000");
+      }
+
+      function frame(now) {
+        const p = (now % loopMs) / loopMs;
+        ctx.clearRect(0, 0, W, H);
+
+        const heat = 0.5 + Math.sin(now * 0.01) * 0.18;
+        const leftUnfold = Math.min(1, p * 2.4);
+        const rightUnfold = Math.min(1, p * 0.45);
+        const vibL = 2.2 + heat * 2.0 + Math.sin(now * 0.023) * 1.1;
+        const vibR = 1.7 + heat * 1.5 + Math.sin(now * 0.021 + 0.9) * 0.9;
+
+        drawFlame(leftProtein.x, flameY, heat + 0.05);
+        drawFlame(rightProtein.x, flameY, heat - 0.03);
+
+        drawRopeProtein(leftProtein.x, leftProtein.y, leftUnfold, "#60a5fa", 0, vibL);
+        drawRopeProtein(rightProtein.x, rightProtein.y, rightUnfold, "#60a5fa", 1, vibR);
+
+        const attachPoint = ropeTopCenter(rightProtein.x, rightProtein.y, rightUnfold, 1, vibR);
+        drawOGlcNAcTagAttached(attachPoint.x, attachPoint.y);
+
+        drawChargeLabel("−", "O-GlcNAc", leftProtein.x - 142, 560, "#dc2626");
+        drawChargeLabel("+", "O-GlcNAc", rightProtein.x - 142, 560, "#16a34a");
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    </script>
+  </body>
+</html>
