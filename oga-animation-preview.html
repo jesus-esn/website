@@ -240,6 +240,13 @@
           ctx.setLineDash([]);
         }
 
+        // Clip dynamic elements to the zoom panel so OGA can exit without
+        // being visible outside the square.
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(zoom.x, zoom.y, zoom.w, zoom.h);
+        ctx.clip();
+
         // OGA as Pac-Man
         const px = allowExit
           ? pacPos.x
@@ -252,6 +259,7 @@
         ctx.closePath();
         ctx.fill();
         drawLabel("OGA", px - 46, py + 16, FONT_SIZE, "#374151");
+        ctx.restore();
 
       }
 
