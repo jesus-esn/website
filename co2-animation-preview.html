@@ -150,30 +150,15 @@
           const base = squigglePoint(i, lysineTs[i]);
           const l = { x: base.x, y: base.y - 30 };
           anchors.push(l);
-
-          ctx.font = `400 ${labelSize}px Aptos, "Libre Franklin", Arial, sans-serif`;
-          const wL = ctx.measureText("L").width;
-          const wY = ctx.measureText("y").width;
-          const wS = ctx.measureText("s").width;
-          const wordW = wL + wY + wS;
-          const tx = l.x - wordW / 2;
-          const ty = l.y - 2;
-
-          ctx.fillStyle = "#111827";
-          ctx.fillText("L", tx, ty);
-          ctx.fillStyle = proteinColor;
-          ctx.fillText("y", tx + wL, ty);
-          ctx.fillStyle = "#111827";
-          ctx.fillText("s", tx + wL + wY, ty);
         }
         return anchors;
       }
 
       function drawCO2At(x, y, attached) {
-        const sideOffset = 36;
-        const sideR = 20;
-        const centerR = 34;
-        const sideDrop = 18;
+        const sideOffset = 46;
+        const sideR = 26;
+        const centerR = 44;
+        const sideDrop = 22;
 
         ctx.strokeStyle = attached ? "#7f1d1d" : "#be123c";
         ctx.lineWidth = 1.8;
